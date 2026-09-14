@@ -1,4 +1,5 @@
 import { BackgroundVideo } from "../common/BackgroundVideo";
+import { ResumePreview } from "../common/ResumePreview";
 import { Button } from "../ui/Button";
 import { ScrollIndicator } from "../ui/ScrollIndicator";
 import { SocialLinks } from "../ui/SocialLinks";
@@ -11,11 +12,9 @@ export function Hero() {
     >
       {/* Two-column Hero */}
       <div className="mx-auto flex min-h-screen w-full flex-col lg:flex-row">
-        
         {/* ================= LEFT - TEXT ================= */}
         <div className="relative z-10 flex w-full items-center px-6 py-24 sm:px-10 lg:w-[42%] lg:px-12 xl:px-16">
           <div className="max-w-2xl">
-
             {/* Small intro */}
             <p className="mb-5 text-sm font-medium uppercase tracking-[0.3em] text-blue-400 md:text-base">
               Hello, I'm
@@ -40,18 +39,23 @@ export function Hero() {
 
             {/* Buttons */}
             <div className="mt-10 flex flex-wrap gap-4">
-              <Button href="#projects">
-                View My Work
-              </Button>
+              <Button href="#projects">View My Work</Button>
 
-              <Button
+              {/* <Button
                 href="/resume.pdf"
                 variant="secondary"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Download Resume
-              </Button>
+              </Button> */}
+              <ResumePreview
+                trigger={
+                  <Button type="button" variant="secondary">
+                    Download Resume
+                  </Button>
+                }
+              />
             </div>
 
             {/* Social Links */}
@@ -63,7 +67,6 @@ export function Hero() {
 
         {/* ================= RIGHT - VIDEO ================= */}
         <div className="relative min-h-[60vh] w-full lg:min-h-screen lg:w-[100%]">
-          
           <BackgroundVideo
             src="/walk.mp4"
             objectPosition="center center"

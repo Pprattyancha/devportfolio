@@ -1,5 +1,6 @@
 import { socialLinks } from "@/app/data/social";
 import Link from "next/link";
+import { SocialLinks } from "../ui/SocialLinks";
 
 
 export function Bottom() {
@@ -14,22 +15,7 @@ export function Bottom() {
 
         {/* Social Links */}
         <div className="flex items-center gap-5">
-          {socialLinks
-            .filter((social) => social.external)
-            .map((social) => (
-              <Link
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-white"
-              >
-                {social.name}
-              </Link>
-            ))}
-
-          <span className="h-1 w-1 rounded-full bg-gray-700" />
-
+         <SocialLinks showContact={false}/>
           {/* Back To Top */}
           <Link
             href="#home"

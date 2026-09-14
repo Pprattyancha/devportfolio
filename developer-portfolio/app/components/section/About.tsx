@@ -1,41 +1,39 @@
+import { AnimatedNumber } from "../common/AnimatedNumber";
 import { BackgroundImage } from "../common/BackgroundImage";
-import { GradientOverlay } from "../common/GradientOverlay";
 
 export function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-black py-24 md:px-12 md:py-32"
+      className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
-      <div className="relative z-10 mx-auto grid w-full items-center gap-12 md:grid-cols-2 md:gap-20">
+      {/* Background Glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[10%] top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-blue-600/10 blur-[140px]"
+      />
+
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 md:grid-cols-2 md:gap-16 lg:gap-20">
         {/* ================= IMAGE - LEFT ================= */}
-        {/* Image Container */}
-        <div className="relative h-[450px] w-full md:h-[600px]">
-          {/* Blurred background image */}
+        <div className="relative w-full">
+          {/* Glow */}
           <div
             aria-hidden="true"
-            className="absolute -inset-6 opacity-70 blur-3xl"
-          >
-            <BackgroundImage
-              src="/work.jpeg"
-              priority
-              objectPosition="65% 25%"
-              className="h-full w-full"
-            />
-          </div>
+            className="absolute inset-10 rounded-full bg-blue-500/10 blur-[100px]"
+          />
 
-          {/* Main image */}
-          <div className="relative h-full w-full overflow-hidden">
+          {/* Image Container */}
+          <div className="relative aspect-video w-full h-full overflow-hidden">
             <BackgroundImage
-              src="/work.jpeg"
+              src="/imageMERN.png"
               priority
-              objectPosition="65% 25%"
-              className="h-full w-full"
+              objectPosition="center"
+              fit="contain"
+              className="h-full w-full "
             />
-
-            <GradientOverlay></GradientOverlay>
           </div>
         </div>
+
         {/* ================= CONTENT - RIGHT ================= */}
         <div>
           <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-blue-400">
@@ -59,17 +57,26 @@ export function About() {
           {/* Stats */}
           <div className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
             <div>
-              <p className="text-3xl font-bold text-white">5+</p>
+              <p className="text-3xl font-bold text-white">
+                <AnimatedNumber end={6} suffix="+" />
+              </p>
+
               <p className="mt-1 text-sm text-gray-500">Years Experience</p>
             </div>
 
             <div>
-              <p className="text-3xl font-bold text-white">20+</p>
+              <p className="text-3xl font-bold text-white">
+                <AnimatedNumber end={15} suffix="+" />
+              </p>
+
               <p className="mt-1 text-sm text-gray-500">Projects</p>
             </div>
 
             <div>
-              <p className="text-3xl font-bold text-white">10+</p>
+              <p className="text-3xl font-bold text-white">
+                <AnimatedNumber end={11} suffix="+" />
+              </p>
+
               <p className="mt-1 text-sm text-gray-500">Technologies</p>
             </div>
           </div>

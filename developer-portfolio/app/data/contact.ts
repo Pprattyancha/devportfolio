@@ -1,12 +1,10 @@
-
 export const contact = {
-  email: "your.email@example.com",
-  phone: "+91 00000 00000",
+  email: "prattyancha009@gmail.com",
+  phone: "+91 9767309002",
   location: "India",
 
   social: {
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername",
+    github: "https://github.com/Pprattyancha/Pprattyancha",
+    linkedin: "https://www.linkedin.com/in/prattyancha-patharkar/",
   },
 };
-

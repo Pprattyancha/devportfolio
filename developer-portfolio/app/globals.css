@@ -37,3 +37,50 @@ body {
   margin: 0;
   background: #000;
 }
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  20% {
+    transform: translateY(-5px);
+  }
+
+  40% {
+    transform: translateY(0);
+  }
+
+  60% {
+    transform: translateY(-3px);
+  }
+
+  80% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes chatBounce {
+  0%,
+  75%,
+  100% {
+    transform: translateY(0);
+  }
+
+  78% {
+    transform: translateY(-5px);
+  }
+
+  81% {
+    transform: translateY(0);
+  }
+
+  84% {
+    transform: translateY(-3px);
+  }
+
+  87% {
+    transform: translateY(0);
+  }
+}
+

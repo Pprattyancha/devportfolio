@@ -1,12 +1,12 @@
 export const socialLinks = [
   {
     name: "GitHub",
-    href: "https://github.com/yourusername",
+    href: "https://github.com/Pprattyancha/Pprattyancha",
     external: true,
   },
   {
     name: "LinkedIn",
-    href: "https://linkedin.com/in/yourusername",
+    href: "https://www.linkedin.com/in/prattyancha-patharkar/",
     external: true,
   },
   {

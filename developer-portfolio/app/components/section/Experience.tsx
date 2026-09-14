@@ -1,25 +1,86 @@
+import Image from "next/image";
+
 import { experience } from "@/app/data/experience";
+import { BackgroundImage } from "../common/BackgroundImage";
 
 export function Experience() {
   return (
     <section
       id="experience"
-      className="relative overflow-hidden bg-black px-6 py-24 md:px-12 md:py-32"
+      className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
-      {/* Blue Glow */}
+      {/* ================= BACKGROUND IMAGE ================= */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <BackgroundImage
+          src="/imglogo.png"
+          alt=""
+          priority
+          objectPosition="center"
+          fit="cover"
+          className="opacity-50"
+        />
+      </div>
+
+      {/* ================= DARK OVERLAY ================= */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/10 blur-3xl"
+        className="pointer-events-none absolute inset-0 z-[1] bg-black/50"
       />
 
-      {/* Additional subtle glow */}
+      {/* ================= GRADIENT OVERLAY ================= */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-32 top-20 h-72 w-72 rounded-full bg-blue-600/10 blur-3xl"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+          bg-gradient-to-b
+          from-black/80
+          via-black/25
+          to-black/90
+        "
       />
 
-      <div className="mx-auto max-w-7xl">
-        {/* Section Header */}
+      {/* ================= CENTER BLUE GLOW ================= */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          z-[3]
+          h-96
+          w-96
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-blue-500/10
+          blur-3xl
+        "
+      />
+
+      {/* ================= RIGHT BLUE GLOW ================= */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          -right-32
+          top-20
+          z-[3]
+          h-72
+          w-72
+          rounded-full
+          bg-blue-600/10
+          blur-3xl
+        "
+      />
+
+      {/* ================= CONTENT ================= */}
+      <div className="relative z-10 mx-auto max-w-7xl">
+        {/* ================= SECTION HEADER ================= */}
         <div className="max-w-3xl">
           <p className="text-sm font-medium uppercase tracking-[0.3em] text-blue-400">
             Experience
@@ -35,7 +96,7 @@ export function Experience() {
           </p>
         </div>
 
-        {/* Experience Timeline */}
+        {/* ================= EXPERIENCE TIMELINE ================= */}
         <div className="relative mt-16">
           {/* Timeline Line */}
           <div className="absolute left-[7px] top-2 hidden h-full w-px bg-white/10 md:block" />
@@ -46,57 +107,156 @@ export function Experience() {
                 key={`${item.company}-${item.role}`}
                 className="relative md:pl-14"
               >
-                {/* Timeline Dot */}
-                <div className="absolute left-0 top-2 hidden h-4 w-4 rounded-full border-4 border-black bg-blue-400 md:block" />
+                {/* ================= TIMELINE DOT ================= */}
+                <div
+                  className="
+                    absolute
+                    left-0
+                    top-2
+                    hidden
+                    h-4
+                    w-4
+                    rounded-full
+                    border-4
+                    border-black
+                    bg-blue-400
+                    shadow-[0_0_12px_rgba(59,130,246,0.8)]
+                    md:block
+                  "
+                />
 
-                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition duration-300 hover:border-white/20 md:p-8">
-                  {/* Header */}
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-blue-400">
-                        {item.period}
-                      </p>
+                {/* ================= EXPERIENCE CARD ================= */}
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-white/10
+                    bg-black/45
+                    p-6
+                    backdrop-blur-sm
+                    transition
+                    duration-300
+                    hover:border-blue-400/30
+                    hover:bg-blue-950/20
+                    hover:shadow-[0_0_40px_rgba(37,99,235,0.10)]
+                    md:p-8
+                  "
+                >
+                  {/* ================= HEADER ================= */}
+                  <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                    {/* Company + Logo */}
+                    <div className="flex items-start gap-4">
+                      {/* Company Logo */}
+                      <div
+                        className="
+                          flex
+                          h-16
+                          w-16
+                          shrink-0
+                          items-center
+                          justify-center
+                          overflow-hidden
+                          p-2
+                          transition
+                          duration-300
+                          group-hover:border-blue-400/30
+                        "
+                      >
+                        <Image
+                          src={item.logo}
+                          alt={`${item.company} logo`}
+                          width={48}
+                          height={48}
+                          className="h-12 w-12 object-contain"
+                        />
+                      </div>
 
-                      <h3 className="mt-2 text-2xl font-semibold text-white">
-                        {item.role}
-                      </h3>
+                      {/* Job Information */}
+                      <div>
+                        <p className="text-sm font-medium text-blue-400">
+                          {item.period}
+                        </p>
 
-                      <p className="mt-1 text-base text-gray-400">
-                        {item.company}
-                        <span className="mx-2 text-gray-600">•</span>
-                        {item.location}
-                      </p>
+                        <h3 className="mt-2 text-2xl font-semibold text-white">
+                          {item.role}
+                        </h3>
+
+                        <p className="mt-1 text-base text-gray-400">
+                          {item.company}
+
+                          <span className="mx-2 text-gray-600">•</span>
+
+                          {item.location}
+                        </p>
+                      </div>
                     </div>
 
-                    <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-400">
+                    {/* Current / Previous Badge */}
+                    <span
+                      className="
+                        w-fit
+                        rounded-full
+                        border
+                        border-white/10
+                        bg-white/5
+                        px-3
+                        py-1
+                        text-xs
+                        text-gray-400
+                      "
+                    >
                       {index === 0 ? "Current" : "Previous"}
                     </span>
                   </div>
 
-                  {/* Description */}
+                  {/* ================= DESCRIPTION ================= */}
                   <p className="mt-6 max-w-3xl leading-7 text-gray-400">
                     {item.description}
                   </p>
 
-                  {/* Achievements */}
+                  {/* ================= ACHIEVEMENTS ================= */}
                   <ul className="mt-6 space-y-3">
                     {item.achievements.map((achievement) => (
                       <li
                         key={achievement}
                         className="flex gap-3 text-sm leading-6 text-gray-300"
                       >
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                        <span
+                          className="
+                            mt-2
+                            h-1.5
+                            w-1.5
+                            shrink-0
+                            rounded-full
+                            bg-blue-400
+                            shadow-[0_0_8px_rgba(59,130,246,0.7)]
+                          "
+                        />
+
                         <span>{achievement}</span>
                       </li>
                     ))}
                   </ul>
 
-                  {/* Technologies */}
+                  {/* ================= TECHNOLOGIES ================= */}
                   <div className="mt-7 flex flex-wrap gap-2">
                     {item.technologies.map((technology) => (
                       <span
                         key={technology}
-                        className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs text-gray-400"
+                        className="
+                          rounded-full
+                          border
+                          border-white/10
+                          bg-black/30
+                          px-3
+                          py-1.5
+                          text-xs
+                          text-gray-400
+                          transition
+                          hover:border-blue-400/30
+                          hover:bg-blue-500/10
+                          hover:text-blue-300
+                        "
                       >
                         {technology}
                       </span>

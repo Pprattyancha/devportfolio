@@ -8,11 +8,16 @@ import { Hero } from "./components/section/Hero";
 import { Projects } from "./components/section/Projects";
 import { Skills } from "./components/section/Skills";
 
+import { FloatingChatButton } from "./components/ui/FloatingChatButton";
+
 export default function Home() {
   return (
     <>
       {/* Fixed navigation */}
       <Navbar />
+
+      {/* Fixed AI Assistant */}
+      <FloatingChatButton />
 
       <main className="bg-black text-white">
         <Hero />

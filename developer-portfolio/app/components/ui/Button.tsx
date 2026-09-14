@@ -3,10 +3,13 @@ import { ReactNode } from "react";
 
 interface ButtonProps {
   children: ReactNode;
-  href: string;
+  href?: string;
   variant?: "primary" | "secondary";
   target?: string;
   rel?: string;
+  className?: string;
+  type?: "button" | "submit" | "reset";
+  onClick?: () => void;
 }
 
 export function Button({
@@ -15,26 +18,35 @@ export function Button({
   variant = "primary",
   target,
   rel,
+  className = "",
+  type = "button",
+  onClick,
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition duration-300 hover:scale-105";
+    "inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition-all duration-300";
 
   const variants = {
     primary:
-      "bg-white text-black hover:bg-gray-200",
-
+      "bg-blue-600 text-black bg-white border-white hover:border-blue-500/70",
     secondary:
-      "border border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20",
+      "border border-blue-500/70 text-white animate-[bounce_2.5s_ease-in-out_infinite] hover:text-blue-300",
   };
 
+  const styles = `${baseStyles} ${variants[variant]} ${className}`;
+
+  // Link button
+  if (href) {
+    return (
+      <Link href={href} className={styles} target={target} rel={rel}>
+        {children}
+      </Link>
+    );
+  }
+
+  // Normal button
   return (
-    <Link
-      href={href}
-      target={target}
-      rel={rel}
-      className={`${baseStyles} ${variants[variant]}`}
-    >
+    <button type={type} className={styles} onClick={onClick}>
       {children}
-    </Link>
+    </button>
   );
 }

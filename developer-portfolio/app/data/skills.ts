@@ -4,9 +4,13 @@ export const skills = [
     technologies: [
       "React",
       "Next.js",
+      "Angular",
+      "React Native",
       "TypeScript",
       "JavaScript",
       "Tailwind CSS",
+      "Bootstrap",
+      "Material UI"
     ],
   },
   {
@@ -14,8 +18,9 @@ export const skills = [
     technologies: [
       "Node.js",
       "Express",
+      "Python",
       "REST APIs",
-      "GraphQL",
+      "FAST APIs",
     ],
   },
   {
@@ -31,8 +36,11 @@ export const skills = [
     technologies: [
       "Git",
       "GitHub",
-      "Docker",
+      "Vercel",
+      "Render",
+      "Postman",
       "AWS",
+      "Jira"
     ],
   },
 ];
