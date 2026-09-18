@@ -3,7 +3,7 @@ import { ResumePreview } from "../common/ResumePreview";
 import { Button } from "../ui/Button";
 import { ScrollIndicator } from "../ui/ScrollIndicator";
 import { SocialLinks } from "../ui/SocialLinks";
-
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 export function Hero() {
   return (
     <section
@@ -41,18 +41,10 @@ export function Hero() {
             <div className="mt-10 flex flex-wrap gap-4">
               <Button href="#projects">View My Work</Button>
 
-              {/* <Button
-                href="/resume.pdf"
-                variant="secondary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Download Resume
-              </Button> */}
               <ResumePreview
                 trigger={
                   <Button type="button" variant="secondary">
-                    Download Resume
+                    Resume <FileDownloadOutlinedIcon className="ml-5" />
                   </Button>
                 }
               />

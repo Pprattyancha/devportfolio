@@ -43,17 +43,33 @@ export function About() {
           <h2 className="max-w-2xl text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
             Building digital experiences that actually work.
           </h2>
-
-          <p className="mt-8 max-w-xl text-lg leading-8 text-gray-400">
-            I'm a Full Stack Developer focused on building scalable,
-            maintainable and high-performance web applications.
-          </p>
-
           <p className="mt-5 max-w-xl text-lg leading-8 text-gray-400">
-            I enjoy turning complex problems into simple, intuitive and reliable
-            digital experiences using modern technologies.
+            I’m Prattyancha Patharkar, a Frontend Lead with 5+ years of
+            experience in MERN/MEAN stack development, specializing in React,
+            Angular, TypeScript, JavaScript, and Node.js. I have worked on
+            scalable web applications, financial systems, real-time dashboards,
+            and data-driven platforms, with strong experience in frontend
+            architecture, performance optimization, API integration, and team
+            leadership. I enjoy turning complex problems into simple, intuitive,
+            and reliable digital experiences using modern technologies.
+            Academically, I completed my schooling in Maharashtra, followed by a
+            <span className="mx-1 font-serif font-bold italic text-white">
+              B.Sc. in Physics, Statistics, and Mathematics
+            </span>
+            from
+            <span className="mx-1 font-mono font-bold text-blue-400">
+              Dharampeth M P Deo Memorial Science College, Nagpur
+            </span>
+            in 2018, and an
+            <span className="mx-1 font-serif font-bold italic text-white">
+              M.Sc. in Computer Applications
+            </span>
+            from
+            <span className="mx-1 font-mono font-bold text-blue-400">
+              Fergusson College, Pune
+            </span>
+            in 2021.
           </p>
-
           {/* Stats */}
           <div className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
             <div>

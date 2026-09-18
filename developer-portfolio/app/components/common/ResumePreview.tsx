@@ -4,7 +4,7 @@ import { useState } from "react";
 import { downloadFile } from "@/app/lib/utils";
 import { Button } from "../ui/Button";
 import { Popup } from "./Popup";
-
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 interface ResumePreviewProps {
   trigger: React.ReactNode;
 }
@@ -14,9 +14,7 @@ const resumePath =
 
 const resumeName = "Prattyancha_Patharkar_Resume.pdf";
 
-export function ResumePreview({
-  trigger,
-}: ResumePreviewProps) {
+export function ResumePreview({ trigger }: ResumePreviewProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDownload = () => {
@@ -63,12 +61,8 @@ export function ResumePreview({
             </Button>
 
             {/* Download */}
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleDownload}
-            >
-              Download Resume
+            <Button type="button" variant="secondary" onClick={handleDownload}>
+              Download <FileDownloadOutlinedIcon className="ml-5" />
             </Button>
           </>
         }

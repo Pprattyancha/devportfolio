@@ -369,28 +369,32 @@ export function Navbar() {
               })}
 
               {/* Mobile Resume */}
-              <Link
-                href="/resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={closeMenu}
-                className="
-                  mt-2
-                  rounded-xl
-                  bg-white
-                  px-4
-                  py-3.5
-                  text-center
-                  text-sm
-                  font-semibold
-                  text-black
-                  transition-all
-                  duration-300
-                  hover:bg-gray-200
-                "
-              >
-                Download Resume
-              </Link>
+              <ResumePreview
+                trigger={
+                  <span
+                    className="
+        ml-3
+        rounded-full
+        border
+        border-blue-400/40
+        bg-white/10
+        px-5
+        py-2
+        text-sm
+        font-medium
+        text-blue-300
+        backdrop-blur-md
+        transition-all
+        duration-300
+        hover:border-blue-400/40
+        hover:bg-blue-500/10
+        hover:text-blue-300
+      "
+                  >
+                    Resume
+                  </span>
+                }
+              />
             </div>
           </div>
         </div>

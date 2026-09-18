@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
@@ -40,7 +36,6 @@ const quickQuestions = [
 
 /* =========================================================
    STOP WORDS
-   These words don't help much when finding a matching question.
 ========================================================= */
 
 const stopWords = new Set([
@@ -84,7 +79,6 @@ const stopWords = new Set([
   "your",
   "you",
   "please",
-  "does",
   "prattyancha",
 ]);
 
@@ -105,7 +99,10 @@ function normalizeText(value: string): string[] {
    FIND BEST ANSWER
 ========================================================= */
 
-function getBotResponse(message: string): string {
+async function getBotResponse(
+  message: string,
+  senderEmail: string,
+): Promise<string> {
   const userWords = normalizeText(message);
 
   if (userWords.length === 0) {
@@ -122,42 +119,30 @@ function getBotResponse(message: string): string {
 
     userWords.forEach((userWord) => {
       questionWords.forEach((questionWord) => {
-        /* Exact word match */
+        // Exact word match
         if (userWord === questionWord) {
           score += 3;
         }
 
-        /* Partial match */
+        // Partial match
         else if (
           userWord.length > 3 &&
           questionWord.length > 3 &&
-          (
-            userWord.includes(questionWord) ||
-            questionWord.includes(userWord)
-          )
+          (userWord.includes(questionWord) || questionWord.includes(userWord))
         ) {
           score += 1;
         }
       });
     });
 
-    /*
-     * Small bonus when the number of matched words
-     * is relatively high.
-     */
     const uniqueMatches = userWords.filter((word) =>
       questionWords.some(
         (questionWord) =>
           questionWord === word ||
-          (
-            word.length > 3 &&
+          (word.length > 3 &&
             questionWord.length > 3 &&
-            (
-              questionWord.includes(word) ||
-              word.includes(questionWord)
-            )
-          )
-      )
+            (questionWord.includes(word) || word.includes(questionWord))),
+      ),
     );
 
     score += uniqueMatches.length;
@@ -168,15 +153,11 @@ function getBotResponse(message: string): string {
     }
   });
 
-  /*
-   * If the question is sufficiently similar,
-   * return the corresponding answer.
-   */
-  if (
-    bestIndex >= 0 &&
-    bestScore >= 4 &&
-    portfolioAnswers[bestIndex]
-  ) {
+  /* =======================================================
+     KNOWN QUESTION
+  ======================================================= */
+
+  if (bestIndex >= 0 && bestScore >= 4 && portfolioAnswers[bestIndex]) {
     return portfolioAnswers[bestIndex];
   }
 
@@ -188,7 +169,7 @@ function getBotResponse(message: string): string {
 
   if (
     /^(hi|hello|hey|hii|hiii|good morning|good afternoon|good evening)/i.test(
-      text
+      text,
     )
   ) {
     return "Hi! 👋 I'm Prattyancha's portfolio assistant. Ask me anything about her experience, skills, projects, technologies, leadership or career.";
@@ -203,10 +184,7 @@ function getBotResponse(message: string): string {
     return "Prattyancha's technology stack includes React, Angular, TypeScript, JavaScript, HTML5, CSS3, Redux, React Query, React Native, Material UI, Node.js, Express, OutSystems, MongoDB, PostgreSQL, MySQL, AWS, ECharts and D3.js.";
   }
 
-  if (
-    text.includes("project") ||
-    text.includes("projects")
-  ) {
+  if (text.includes("project") || text.includes("projects")) {
     return "Prattyancha has worked on FinPay App, StoreDash Suite, ChatPort, OpsGraph UI, MLStream Visualizer, UrbanData Map, MediView Timeline, CharityPanel, PlanMate and WorkSync HR.";
   }
 
@@ -218,31 +196,67 @@ function getBotResponse(message: string): string {
     return "Yes. Prattyancha is open to senior frontend, MERN/MEAN and full-stack opportunities, particularly roles involving React, Angular, TypeScript, scalable applications and modern frontend architecture.";
   }
 
-  return "I couldn't find a specific answer for that yet. Try asking me about Prattyancha's experience, React, Angular, MERN, MEAN, OutSystems, projects, leadership, education, availability or contact information.";
+  /* =======================================================
+     UNKNOWN QUESTION → SEND EMAIL
+  ======================================================= */
+
+  try {
+    const response = await fetch("/api/chatbot/unknown-question", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        question: message,
+        senderEmail,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Unknown question API error:", data);
+
+      return "I couldn't send your question to Prattyancha right now. Please try again later.";
+    }
+  } catch (error) {
+    console.error("Failed to send unknown question:", error);
+  }
+
+  return "I don't have an answer for that yet. I've noted your question and Prattyancha will review it.";
 }
 
 /* =========================================================
    COMPONENT
 ========================================================= */
 
-export function PortfolioChat({
-  onClose,
-}: PortfolioChatProps) {
+export function PortfolioChat({ onClose }: PortfolioChatProps) {
+  /* =======================================================
+     EMAIL STATE
+  ======================================================= */
+
+  const [email, setEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState("");
+
+  /* =======================================================
+     CHAT STATE
+  ======================================================= */
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: "bot",
-      text: "Hi! 👋 I'm Prattyancha's portfolio assistant. Ask me anything about her experience, skills, projects or career.",
+      text: "Hi! 👋 Before we start, please enter your email address so Prattyancha can get back to you if needed.",
     },
   ]);
 
   const [input, setInput] = useState("");
 
-  const latestBotMessageRef =
-    useRef<HTMLDivElement | null>(null);
+  const latestBotMessageRef = useRef<HTMLDivElement | null>(null);
 
   /* =======================================================
-     AUTO FOCUS LATEST AI ANSWER
+     AUTO SCROLL
   ======================================================= */
 
   useEffect(() => {
@@ -255,13 +269,66 @@ export function PortfolioChat({
   }, [messages]);
 
   /* =======================================================
+     EMAIL VALIDATION
+  ======================================================= */
+
+  const isValidEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
+  /* =======================================================
+     SUBMIT EMAIL
+  ======================================================= */
+
+  const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      setEmailError("Please enter your email address.");
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
+    setEmailError("");
+
+    setEmail(trimmedEmail);
+    setEmailSubmitted(true);
+
+    const timestamp = Date.now();
+
+    setMessages([
+      {
+        id: 1,
+        sender: "bot",
+        text: "Hi! 👋 Before we start, please enter your email address so Prattyancha can get back to you if needed.",
+      },
+      {
+        id: timestamp,
+        sender: "user",
+        text: trimmedEmail,
+      },
+      {
+        id: timestamp + 1,
+        sender: "bot",
+        text: "Thanks! 😊 You're all set. What would you like to know about Prattyancha?",
+      },
+    ]);
+  };
+
+  /* =======================================================
      SEND MESSAGE
   ======================================================= */
 
-  const sendMessage = (text?: string) => {
+  const sendMessage = async (text?: string) => {
     const message = (text ?? input).trim();
 
-    if (!message) {
+    if (!message || !emailSubmitted || !email) {
       return;
     }
 
@@ -273,32 +340,242 @@ export function PortfolioChat({
       text: message,
     };
 
+    // Clear input immediately
+    setInput("");
+
+    // Show user message immediately
+    setMessages((previousMessages) => [...previousMessages, userMessage]);
+
+    const botResponse = await getBotResponse(message, email);
+
     const botMessage: Message = {
       id: timestamp + 1,
       sender: "bot",
-      text: getBotResponse(message),
+      text: botResponse,
     };
 
-    setMessages((previousMessages) => [
-      ...previousMessages,
-      userMessage,
-      botMessage,
-    ]);
-
-    setInput("");
+    setMessages((previousMessages) => [...previousMessages, botMessage]);
   };
 
   /* =======================================================
-     FORM SUBMIT
+     CHAT FORM SUBMIT
   ======================================================= */
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     sendMessage();
   };
+
+  /* =======================================================
+     EMAIL SCREEN
+  ======================================================= */
+
+  if (!emailSubmitted) {
+    return (
+      <div
+        className="
+          fixed
+          bottom-6
+          right-6
+          z-[100]
+          flex
+          h-[620px]
+          w-[390px]
+          max-w-[calc(100vw-32px)]
+          flex-col
+          overflow-hidden
+          rounded-3xl
+          border
+          border-white/10
+          bg-[#080808]/95
+          shadow-[0_0_60px_rgba(37,99,235,0.25)]
+          backdrop-blur-2xl
+        "
+      >
+        {/* HEADER */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            border-b
+            border-white/10
+            bg-white/[0.03]
+            px-5
+            py-4
+          "
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                bg-blue-500/10
+                text-blue-400
+                shadow-[0_0_20px_rgba(59,130,246,0.25)]
+              "
+            >
+              <SmartToyOutlinedIcon fontSize="small" />
+            </div>
+
+            <div>
+              <p className="font-semibold text-white">Portfolio Assistant</p>
+
+              <div className="mt-0.5 flex items-center gap-2">
+                <span
+                  className="
+                    h-1.5
+                    w-1.5
+                    rounded-full
+                    bg-green-400
+                    shadow-[0_0_8px_rgba(74,222,128,0.8)]
+                  "
+                />
+
+                <span className="text-xs text-gray-500">Online</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close chat"
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-full
+              text-gray-400
+              transition
+              hover:bg-white/10
+              hover:text-white
+            "
+          >
+            <CloseIcon fontSize="small" />
+          </button>
+        </div>
+
+        {/* EMAIL CONTENT */}
+
+        <div className="flex flex-1 flex-col justify-center px-6">
+          <div className="mb-8 text-center">
+            <div
+              className="
+                mx-auto
+                mb-5
+                flex
+                h-16
+                w-16
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-blue-400/20
+                bg-blue-500/10
+                text-blue-400
+                shadow-[0_0_30px_rgba(59,130,246,0.2)]
+              "
+            >
+              <SmartToyOutlinedIcon />
+            </div>
+
+            <h2 className="text-xl font-semibold text-white">Welcome! 👋</h2>
+
+            <p className="mt-3 text-sm leading-6 text-gray-400">
+              Please enter your email address to start chatting with
+              Prattyancha&apos;s portfolio assistant.
+            </p>
+          </div>
+
+          <form onSubmit={handleEmailSubmit} className="space-y-3">
+            <label
+              htmlFor="portfolio-email"
+              className="block text-sm font-medium text-gray-300"
+            >
+              Your email address
+              <span className="ml-1 text-red-400">*</span>
+            </label>
+
+            <input
+              id="portfolio-email"
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setEmailError("");
+              }}
+              placeholder="Enter your email address"
+              autoComplete="email"
+              autoFocus
+              required
+              className="
+                w-full
+                rounded-2xl
+                border
+                border-white/10
+                bg-white/[0.04]
+                px-4
+                py-3
+                text-sm
+                text-white
+                outline-none
+                transition
+                placeholder:text-gray-600
+                focus:border-blue-400/40
+                focus:bg-blue-500/[0.03]
+              "
+            />
+
+            {emailError && <p className="text-xs text-red-400">{emailError}</p>}
+
+            <button
+              type="submit"
+              disabled={!email.trim()}
+              className="
+                flex
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-2xl
+                bg-blue-500
+                px-5
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                transition
+                duration-200
+                hover:bg-blue-400
+                hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
+            >
+              Start Chat
+              <SendIcon fontSize="small" />
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-[10px] text-gray-600">
+            Your email is used only to respond to your questions.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  /* =======================================================
+     CHAT UI
+  ======================================================= */
 
   return (
     <div
@@ -321,9 +598,7 @@ export function PortfolioChat({
         backdrop-blur-2xl
       "
     >
-      {/* ===================================================
-          HEADER
-      =================================================== */}
+      {/* HEADER */}
 
       <div
         className="
@@ -338,7 +613,6 @@ export function PortfolioChat({
         "
       >
         <div className="flex items-center gap-3">
-
           <div
             className="
               flex
@@ -356,9 +630,7 @@ export function PortfolioChat({
           </div>
 
           <div>
-            <p className="font-semibold text-white">
-              Portfolio Assistant
-            </p>
+            <p className="font-semibold text-white">Portfolio Assistant</p>
 
             <div className="mt-0.5 flex items-center gap-2">
               <span
@@ -371,9 +643,7 @@ export function PortfolioChat({
                 "
               />
 
-              <span className="text-xs text-gray-500">
-                Online
-              </span>
+              <span className="text-xs text-gray-500">Online</span>
             </div>
           </div>
         </div>
@@ -399,9 +669,7 @@ export function PortfolioChat({
         </button>
       </div>
 
-      {/* ===================================================
-          CHAT AREA
-      =================================================== */}
+      {/* CHAT AREA */}
 
       <div
         className="
@@ -414,24 +682,16 @@ export function PortfolioChat({
         "
       >
         <div className="space-y-4">
-
           {messages.map((message, index) => {
             const isLatestBotMessage =
-              message.sender === "bot" &&
-              index === messages.length - 1;
+              message.sender === "bot" && index === messages.length - 1;
 
             return (
               <div
                 key={message.id}
-                ref={
-                  isLatestBotMessage
-                    ? latestBotMessageRef
-                    : null
-                }
+                ref={isLatestBotMessage ? latestBotMessageRef : null}
                 className={`flex ${
-                  message.sender === "user"
-                    ? "justify-end"
-                    : "justify-start"
+                  message.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
@@ -442,7 +702,6 @@ export function PortfolioChat({
                     py-3
                     text-sm
                     leading-6
-
                     ${
                       message.sender === "user"
                         ? `
@@ -467,13 +726,10 @@ export function PortfolioChat({
             );
           })}
 
-          {/* =================================================
-              QUICK QUESTIONS
-          ================================================= */}
+          {/* QUICK QUESTIONS */}
 
-          {messages.length === 1 && (
+          {messages.length === 3 && (
             <div className="pt-2">
-
               <p
                 className="
                   mb-3
@@ -487,14 +743,11 @@ export function PortfolioChat({
               </p>
 
               <div className="flex flex-wrap gap-2">
-
                 {quickQuestions.map((question) => (
                   <button
                     key={question}
                     type="button"
-                    onClick={() =>
-                      sendMessage(question)
-                    }
+                    onClick={() => sendMessage(question)}
                     className="
                       rounded-full
                       border
@@ -514,20 +767,15 @@ export function PortfolioChat({
                     {question}
                   </button>
                 ))}
-
               </div>
             </div>
           )}
-
         </div>
       </div>
 
-      {/* ===================================================
-          INPUT
-      =================================================== */}
+      {/* INPUT */}
 
       <div className="border-t border-white/10 p-4">
-
         <form
           onSubmit={handleSubmit}
           className="
@@ -544,13 +792,10 @@ export function PortfolioChat({
             focus-within:bg-blue-500/[0.03]
           "
         >
-
           <input
             type="text"
             value={input}
-            onChange={(event) =>
-              setInput(event.target.value)
-            }
+            onChange={(event) => setInput(event.target.value)}
             placeholder="Ask me anything..."
             autoComplete="off"
             className="
@@ -590,7 +835,6 @@ export function PortfolioChat({
           >
             <SendIcon fontSize="small" />
           </button>
-
         </form>
 
         <p
@@ -601,9 +845,8 @@ export function PortfolioChat({
             text-gray-700
           "
         >
-          Ask about Prattyancha's portfolio
+          Ask about Prattyancha&apos;s portfolio
         </p>
-
       </div>
     </div>
   );
