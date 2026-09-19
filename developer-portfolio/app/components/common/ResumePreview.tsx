@@ -9,8 +9,7 @@ interface ResumePreviewProps {
   trigger: React.ReactNode;
 }
 
-const resumePath =
-  "/Resume_Prattyancha_Patharkar_Software_developer_5years.pdf";
+const resumePath = "/Prattyancha_Patharkar_ResumeI_MERN_MEAN_Outsystems.pdf";
 
 const resumeName = "Prattyancha_Patharkar_Resume.pdf";
 
