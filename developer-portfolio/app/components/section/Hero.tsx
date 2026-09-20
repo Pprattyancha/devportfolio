@@ -1,10 +1,21 @@
+"use client";
+import { downloadFile } from "@/app/lib/utils";
 import { BackgroundVideo } from "../common/BackgroundVideo";
 import { ResumePreview } from "../common/ResumePreview";
 import { Button } from "../ui/Button";
 import { ScrollIndicator } from "../ui/ScrollIndicator";
 import { SocialLinks } from "../ui/SocialLinks";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import { useRouter } from "next/navigation";
 export function Hero() {
+  const resumePath = "/Prattyancha_Patharkar_ResumeI_MERN_MEAN_Outsystems.pdf";
+  const handleResumeClick = () => {
+    window.open(
+      "/Prattyancha_Patharkar_ResumeI_MERN_MEAN_Outsystems.pdf",
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
   return (
     <section
       id="home"
@@ -13,20 +24,20 @@ export function Hero() {
       {/* Two-column Hero */}
       <div className="mx-auto flex min-h-screen w-full flex-col lg:flex-row">
         {/* ================= LEFT - TEXT ================= */}
-        <div className="relative z-10 flex w-full items-center px-6 py-24 sm:px-10 lg:w-[42%] lg:px-12 xl:px-16">
-          <div className="max-w-2xl">
+        <div className="relative z-10 flex w-full items-center px-6 py-24 sm:px-10 lg:w-[50%] lg:px-12 xl:px-16">
+          <div className="max-w-[100%]">
             {/* Small intro */}
             <p className="mb-5 text-sm font-medium uppercase tracking-[0.3em] text-blue-400 md:text-base">
               Hello, I'm
             </p>
 
             {/* Name */}
-            <h1 className="text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl md:text-7xl xl:text-8xl">
-              Prattyancha
+            <h1 className="text-xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl md:text-xl xl:text-4xl">
+              Prattyancha Patharkar
             </h1>
 
             {/* Role */}
-            <h2 className="mt-6 text-3xl font-semibold leading-tight text-gray-200 sm:text-4xl md:text-5xl">
+            <h2 className="mt-6 text-xl font-semibold leading-tight text-gray-200 sm:text-md md:text-xl">
               Full Stack Developer
               <span className="text-blue-400">.</span>
             </h2>
@@ -41,13 +52,14 @@ export function Hero() {
             <div className="mt-10 flex flex-wrap gap-4">
               <Button href="#projects">View My Work</Button>
 
-              <ResumePreview
-                trigger={
-                  <Button type="button" variant="secondary">
-                    Resume <FileDownloadOutlinedIcon className="ml-5" />
-                  </Button>
-                }
-              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleResumeClick}
+              >
+                Resume
+                <FileDownloadOutlinedIcon className="ml-5" />
+              </Button>
             </div>
 
             {/* Social Links */}
@@ -58,7 +70,7 @@ export function Hero() {
         </div>
 
         {/* ================= RIGHT - VIDEO ================= */}
-        <div className="relative min-h-[60vh] w-full lg:min-h-screen lg:w-[100%]">
+        <div className="relative min-h-[60vh] w-full lg:min-h-screen lg:w-[50%]">
           <BackgroundVideo
             src="/walk.mp4"
             objectPosition="center center"

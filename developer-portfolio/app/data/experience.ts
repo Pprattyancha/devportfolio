@@ -2,7 +2,7 @@ export const experience = [
   {
     company: "Greenpay Network Pvt. Ltd.",
     role: "Frontend Lead",
-    period: "Mar 2024 — Present",
+    period: "Mar 2024 — July 2026",
     location: "India",
     logo: "/greenpay.png",
     description:

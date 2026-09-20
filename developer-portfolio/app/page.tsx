@@ -9,6 +9,7 @@ import { Projects } from "./components/section/Projects";
 import { Skills } from "./components/section/Skills";
 
 import { FloatingChatButton } from "./components/ui/FloatingChatButton";
+import { SocialLinks } from "./components/ui/SocialLinks";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
 
       {/* Fixed AI Assistant */}
       <FloatingChatButton />
+      <SocialLinks />
 
       <main className="bg-black text-white">
         <Hero />

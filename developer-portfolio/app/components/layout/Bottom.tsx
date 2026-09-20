@@ -15,7 +15,7 @@ export function Bottom() {
 
         {/* Social Links */}
         <div className="flex items-center gap-5">
-         <SocialLinks showContact={false}/>
+         {/* <SocialLinks showContact={false}/> */}
           {/* Back To Top */}
           <Link
             href="#home"

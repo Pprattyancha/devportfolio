@@ -21,6 +21,11 @@ interface Message {
   text: string;
 }
 
+interface BotResponse {
+  answer: string;
+  isUnknown: boolean;
+}
+
 /* =========================================================
    QUICK QUESTIONS
 ========================================================= */
@@ -96,17 +101,17 @@ function normalizeText(value: string): string[] {
 }
 
 /* =========================================================
-   FIND BEST ANSWER
+   FIND BOT RESPONSE
 ========================================================= */
 
-async function getBotResponse(
-  message: string,
-  senderEmail: string,
-): Promise<string> {
+function getBotResponse(message: string): BotResponse {
   const userWords = normalizeText(message);
 
   if (userWords.length === 0) {
-    return "Please ask me something about Prattyancha's portfolio.";
+    return {
+      answer: "Please ask me something about Prattyancha's portfolio.",
+      isUnknown: false,
+    };
   }
 
   let bestIndex = -1;
@@ -119,12 +124,12 @@ async function getBotResponse(
 
     userWords.forEach((userWord) => {
       questionWords.forEach((questionWord) => {
-        // Exact word match
+        /* Exact match */
         if (userWord === questionWord) {
           score += 3;
         }
 
-        // Partial match
+        /* Partial match */
         else if (
           userWord.length > 3 &&
           questionWord.length > 3 &&
@@ -158,7 +163,10 @@ async function getBotResponse(
   ======================================================= */
 
   if (bestIndex >= 0 && bestScore >= 4 && portfolioAnswers[bestIndex]) {
-    return portfolioAnswers[bestIndex];
+    return {
+      answer: portfolioAnswers[bestIndex],
+      isUnknown: false,
+    };
   }
 
   /* =======================================================
@@ -167,13 +175,25 @@ async function getBotResponse(
 
   const text = message.toLowerCase().trim();
 
+  /* -------------------------------------------------------
+     GREETING
+  ------------------------------------------------------- */
+
   if (
-    /^(hi|hello|hey|hii|hiii|good morning|good afternoon|good evening)/i.test(
+    /^(hi|hello|hey|hii|hiii|good morning|good afternoon|good evening)\b/i.test(
       text,
     )
   ) {
-    return "Hi! 👋 I'm Prattyancha's portfolio assistant. Ask me anything about her experience, skills, projects, technologies, leadership or career.";
+    return {
+      answer:
+        "Hi! 👋 I'm Prattyancha's portfolio assistant. Ask me anything about her experience, skills, projects, technologies, leadership or career.",
+      isUnknown: false,
+    };
   }
+
+  /* -------------------------------------------------------
+     TECHNOLOGIES
+  ------------------------------------------------------- */
 
   if (
     text.includes("technology") ||
@@ -181,49 +201,50 @@ async function getBotResponse(
     text.includes("tech stack") ||
     text.includes("skills")
   ) {
-    return "Prattyancha's technology stack includes React, Angular, TypeScript, JavaScript, HTML5, CSS3, Redux, React Query, React Native, Material UI, Node.js, Express, OutSystems, MongoDB, PostgreSQL, MySQL, AWS, ECharts and D3.js.";
+    return {
+      answer:
+        "Prattyancha's technology stack includes React, Angular, TypeScript, JavaScript, HTML5, CSS3, Redux, React Query, React Native, Material UI, Node.js, Express, OutSystems, MongoDB, PostgreSQL, MySQL, AWS, ECharts and D3.js.",
+      isUnknown: false,
+    };
   }
 
+  /* -------------------------------------------------------
+     PROJECTS
+  ------------------------------------------------------- */
+
   if (text.includes("project") || text.includes("projects")) {
-    return "Prattyancha has worked on FinPay App, StoreDash Suite, ChatPort, OpsGraph UI, MLStream Visualizer, UrbanData Map, MediView Timeline, CharityPanel, PlanMate and WorkSync HR.";
+    return {
+      answer:
+        "Prattyancha has worked on FinPay App, StoreDash Suite, ChatPort, OpsGraph UI, MLStream Visualizer, UrbanData Map, MediView Timeline, CharityPanel, PlanMate and WorkSync HR.",
+      isUnknown: false,
+    };
   }
+
+  /* -------------------------------------------------------
+     AVAILABILITY
+  ------------------------------------------------------- */
 
   if (
     text.includes("available") ||
     text.includes("opportunity") ||
     text.includes("opportunities")
   ) {
-    return "Yes. Prattyancha is open to senior frontend, MERN/MEAN and full-stack opportunities, particularly roles involving React, Angular, TypeScript, scalable applications and modern frontend architecture.";
+    return {
+      answer:
+        "Yes. Prattyancha is open to senior frontend, MERN/MEAN and full-stack opportunities, particularly roles involving React, Angular, TypeScript, scalable applications and modern frontend architecture.",
+      isUnknown: false,
+    };
   }
 
   /* =======================================================
-     UNKNOWN QUESTION → SEND EMAIL
+     UNKNOWN QUESTION
   ======================================================= */
 
-  try {
-    const response = await fetch("/api/chatbot/unknown-question", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question: message,
-        senderEmail,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Unknown question API error:", data);
-
-      return "I couldn't send your question to Prattyancha right now. Please try again later.";
-    }
-  } catch (error) {
-    console.error("Failed to send unknown question:", error);
-  }
-
-  return "I don't have an answer for that yet. I've noted your question and Prattyancha will review it.";
+  return {
+    answer:
+      "I don't have an answer for that yet. If you'd like Prattyancha to review your question, please share your email address.",
+    isUnknown: true,
+  };
 }
 
 /* =========================================================
@@ -236,8 +257,10 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
   ======================================================= */
 
   const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailRequired, setEmailRequired] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [pendingQuestion, setPendingQuestion] = useState("");
+  const [sendingQuestion, setSendingQuestion] = useState(false);
 
   /* =======================================================
      CHAT STATE
@@ -247,7 +270,7 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
     {
       id: 1,
       sender: "bot",
-      text: "Hi! 👋 Before we start, please enter your email address so Prattyancha can get back to you if needed.",
+      text: "Hi! 👋 I'm Prattyancha's portfolio assistant. Ask me anything about her experience, skills, projects, technologies or career.",
     },
   ]);
 
@@ -280,10 +303,15 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
      SUBMIT EMAIL
   ======================================================= */
 
-  const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedEmail = email.trim();
+    const trimmedQuestion = pendingQuestion.trim();
+
+    /* -------------------------------------------------------
+       VALIDATE EMAIL
+    ------------------------------------------------------- */
 
     if (!trimmedEmail) {
       setEmailError("Please enter your email address.");
@@ -295,44 +323,136 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
       return;
     }
 
+    /* -------------------------------------------------------
+       VALIDATE PENDING QUESTION
+    ------------------------------------------------------- */
+
+    if (!trimmedQuestion) {
+      setEmailError("The question could not be found. Please try again.");
+      return;
+    }
+
+    /* -------------------------------------------------------
+       PREVENT DUPLICATE REQUEST
+    ------------------------------------------------------- */
+
+    if (sendingQuestion) {
+      return;
+    }
+
     setEmailError("");
+    setSendingQuestion(true);
 
-    setEmail(trimmedEmail);
-    setEmailSubmitted(true);
+    try {
+      const response = await fetch("/api/chatbot/unknown-question", {
+        method: "POST",
 
-    const timestamp = Date.now();
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
 
-    setMessages([
-      {
-        id: 1,
-        sender: "bot",
-        text: "Hi! 👋 Before we start, please enter your email address so Prattyancha can get back to you if needed.",
-      },
-      {
-        id: timestamp,
-        sender: "user",
-        text: trimmedEmail,
-      },
-      {
-        id: timestamp + 1,
-        sender: "bot",
-        text: "Thanks! 😊 You're all set. What would you like to know about Prattyancha?",
-      },
-    ]);
+        body: JSON.stringify({
+          question: trimmedQuestion,
+          senderEmail: trimmedEmail,
+        }),
+      });
+
+      /* -----------------------------------------------------
+         SAFELY HANDLE RESPONSE
+      ----------------------------------------------------- */
+
+      const contentType = response.headers.get("content-type");
+
+      let data: {
+        success?: boolean;
+        message?: string;
+        error?: string;
+      } = {};
+
+      if (contentType?.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const responseText = await response.text();
+
+        console.error("API returned non-JSON response:", responseText);
+      }
+
+      /* -----------------------------------------------------
+         API ERROR
+      ----------------------------------------------------- */
+
+      if (!response.ok) {
+        console.error("Unknown question API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
+
+        setEmailError(
+          data?.error ||
+            data?.message ||
+            "Unable to send your question. Please try again.",
+        );
+
+        return;
+      }
+
+      /* -----------------------------------------------------
+         SUCCESS
+      ----------------------------------------------------- */
+
+      console.log("Unknown question sent successfully:", data);
+
+      // Keep email for this chat session
+      setEmail(trimmedEmail);
+
+      // Hide email form
+      setEmailRequired(false);
+
+      // Clear pending question
+      setPendingQuestion("");
+
+      // Show success message
+      setMessages((previousMessages) => [
+        ...previousMessages,
+        {
+          id: Date.now(),
+          sender: "bot",
+          text: "Thanks! 😊 I've sent your question to Prattyancha. She can review it and get back to you if needed.",
+        },
+      ]);
+    } catch (error) {
+      /* -----------------------------------------------------
+         NETWORK / FETCH ERROR
+      ----------------------------------------------------- */
+
+      console.error("Unknown question request failed:", error);
+
+      setEmailError(
+        "Unable to connect to the server. Please check your internet connection and try again.",
+      );
+    } finally {
+      setSendingQuestion(false);
+    }
   };
 
   /* =======================================================
      SEND MESSAGE
   ======================================================= */
 
-  const sendMessage = async (text?: string) => {
+  const sendMessage = (text?: string) => {
     const message = (text ?? input).trim();
 
-    if (!message || !emailSubmitted || !email) {
+    if (!message || sendingQuestion || emailRequired) {
       return;
     }
 
     const timestamp = Date.now();
+
+    /* -------------------------------------------------------
+       USER MESSAGE
+    ------------------------------------------------------- */
 
     const userMessage: Message = {
       id: timestamp,
@@ -340,18 +460,49 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
       text: message,
     };
 
-    // Clear input immediately
+    // Clear input
     setInput("");
 
-    // Show user message immediately
+    // Show user message
     setMessages((previousMessages) => [...previousMessages, userMessage]);
 
-    const botResponse = await getBotResponse(message, email);
+    /* -------------------------------------------------------
+       GET RESPONSE
+    ------------------------------------------------------- */
 
+    const botResponse = getBotResponse(message);
+
+    /* =====================================================
+       KNOWN QUESTION
+    ===================================================== */
+
+    if (!botResponse.isUnknown) {
+      const botMessage: Message = {
+        id: timestamp + 1,
+        sender: "bot",
+        text: botResponse.answer,
+      };
+
+      setMessages((previousMessages) => [...previousMessages, botMessage]);
+
+      return;
+    }
+
+    /* =====================================================
+       UNKNOWN QUESTION
+    ===================================================== */
+
+    // Save question
+    setPendingQuestion(message);
+
+    // Show email form
+    setEmailRequired(true);
+
+    // Tell user why email is required
     const botMessage: Message = {
       id: timestamp + 1,
       sender: "bot",
-      text: botResponse,
+      text: botResponse.answer,
     };
 
     setMessages((previousMessages) => [...previousMessages, botMessage]);
@@ -363,229 +514,23 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     sendMessage();
   };
 
   /* =======================================================
-     EMAIL SCREEN
-  ======================================================= */
-
-  if (!emailSubmitted) {
-    return (
-      <div
-        className="
-          fixed
-          bottom-6
-          right-6
-          z-[100]
-          flex
-          h-[620px]
-          w-[390px]
-          max-w-[calc(100vw-32px)]
-          flex-col
-          overflow-hidden
-          rounded-3xl
-          border
-          border-white/10
-          bg-[#080808]/95
-          shadow-[0_0_60px_rgba(37,99,235,0.25)]
-          backdrop-blur-2xl
-        "
-      >
-        {/* HEADER */}
-
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-            border-b
-            border-white/10
-            bg-white/[0.03]
-            px-5
-            py-4
-          "
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-full
-                bg-blue-500/10
-                text-blue-400
-                shadow-[0_0_20px_rgba(59,130,246,0.25)]
-              "
-            >
-              <SmartToyOutlinedIcon fontSize="small" />
-            </div>
-
-            <div>
-              <p className="font-semibold text-white">Portfolio Assistant</p>
-
-              <div className="mt-0.5 flex items-center gap-2">
-                <span
-                  className="
-                    h-1.5
-                    w-1.5
-                    rounded-full
-                    bg-green-400
-                    shadow-[0_0_8px_rgba(74,222,128,0.8)]
-                  "
-                />
-
-                <span className="text-xs text-gray-500">Online</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close chat"
-            className="
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              rounded-full
-              text-gray-400
-              transition
-              hover:bg-white/10
-              hover:text-white
-            "
-          >
-            <CloseIcon fontSize="small" />
-          </button>
-        </div>
-
-        {/* EMAIL CONTENT */}
-
-        <div className="flex flex-1 flex-col justify-center px-6">
-          <div className="mb-8 text-center">
-            <div
-              className="
-                mx-auto
-                mb-5
-                flex
-                h-16
-                w-16
-                items-center
-                justify-center
-                rounded-full
-                border
-                border-blue-400/20
-                bg-blue-500/10
-                text-blue-400
-                shadow-[0_0_30px_rgba(59,130,246,0.2)]
-              "
-            >
-              <SmartToyOutlinedIcon />
-            </div>
-
-            <h2 className="text-xl font-semibold text-white">Welcome! 👋</h2>
-
-            <p className="mt-3 text-sm leading-6 text-gray-400">
-              Please enter your email address to start chatting with
-              Prattyancha&apos;s portfolio assistant.
-            </p>
-          </div>
-
-          <form onSubmit={handleEmailSubmit} className="space-y-3">
-            <label
-              htmlFor="portfolio-email"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Your email address
-              <span className="ml-1 text-red-400">*</span>
-            </label>
-
-            <input
-              id="portfolio-email"
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setEmailError("");
-              }}
-              placeholder="Enter your email address"
-              autoComplete="email"
-              autoFocus
-              required
-              className="
-                w-full
-                rounded-2xl
-                border
-                border-white/10
-                bg-white/[0.04]
-                px-4
-                py-3
-                text-sm
-                text-white
-                outline-none
-                transition
-                placeholder:text-gray-600
-                focus:border-blue-400/40
-                focus:bg-blue-500/[0.03]
-              "
-            />
-
-            {emailError && <p className="text-xs text-red-400">{emailError}</p>}
-
-            <button
-              type="submit"
-              disabled={!email.trim()}
-              className="
-                flex
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-2xl
-                bg-blue-500
-                px-5
-                py-3
-                text-sm
-                font-semibold
-                text-white
-                transition
-                duration-200
-                hover:bg-blue-400
-                hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]
-                disabled:cursor-not-allowed
-                disabled:opacity-40
-              "
-            >
-              Start Chat
-              <SendIcon fontSize="small" />
-            </button>
-          </form>
-
-          <p className="mt-5 text-center text-[10px] text-gray-600">
-            Your email is used only to respond to your questions.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  /* =======================================================
-     CHAT UI
+     UI
   ======================================================= */
 
   return (
     <div
       className="
         fixed
-        bottom-6
-        right-6
+        bottom-4
+        right-4
         z-[100]
         flex
-        h-[620px]
+        h-[min(620px,calc(100dvh-32px))]
         w-[390px]
         max-w-[calc(100vw-32px)]
         flex-col
@@ -596,13 +541,18 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
         bg-[#080808]/95
         shadow-[0_0_60px_rgba(37,99,235,0.25)]
         backdrop-blur-2xl
+        sm:bottom-6
+        sm:right-6
       "
     >
-      {/* HEADER */}
+      {/* ===================================================
+          HEADER
+      =================================================== */}
 
       <div
         className="
           flex
+          shrink-0
           items-center
           justify-between
           border-b
@@ -618,6 +568,7 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
               flex
               h-10
               w-10
+              shrink-0
               items-center
               justify-center
               rounded-full
@@ -656,6 +607,7 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
             flex
             h-9
             w-9
+            shrink-0
             items-center
             justify-center
             rounded-full
@@ -669,10 +621,13 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
         </button>
       </div>
 
-      {/* CHAT AREA */}
+      {/* ===================================================
+          CHAT AREA
+      =================================================== */}
 
       <div
         className="
+          min-h-0
           flex-1
           overflow-y-auto
           p-5
@@ -702,6 +657,7 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
                     py-3
                     text-sm
                     leading-6
+
                     ${
                       message.sender === "user"
                         ? `
@@ -726,18 +682,20 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
             );
           })}
 
-          {/* QUICK QUESTIONS */}
+          {/* =================================================
+              QUICK QUESTIONS
+          ================================================= */}
 
-          {messages.length === 3 && (
+          {messages.length === 1 && !emailRequired && (
             <div className="pt-2">
               <p
                 className="
-                  mb-3
-                  text-xs
-                  uppercase
-                  tracking-wider
-                  text-gray-600
-                "
+                    mb-3
+                    text-xs
+                    uppercase
+                    tracking-wider
+                    text-gray-600
+                  "
               >
                 Suggested questions
               </p>
@@ -749,20 +707,20 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
                     type="button"
                     onClick={() => sendMessage(question)}
                     className="
-                      rounded-full
-                      border
-                      border-white/10
-                      bg-white/[0.03]
-                      px-3
-                      py-2
-                      text-left
-                      text-xs
-                      text-gray-400
-                      transition
-                      hover:border-blue-400/30
-                      hover:bg-blue-500/10
-                      hover:text-blue-300
-                    "
+                          rounded-full
+                          border
+                          border-white/10
+                          bg-white/[0.03]
+                          px-3
+                          py-2
+                          text-left
+                          text-xs
+                          text-gray-400
+                          transition
+                          hover:border-blue-400/30
+                          hover:bg-blue-500/10
+                          hover:text-blue-300
+                        "
                   >
                     {question}
                   </button>
@@ -773,81 +731,200 @@ export function PortfolioChat({ onClose }: PortfolioChatProps) {
         </div>
       </div>
 
-      {/* INPUT */}
+      {/* ===================================================
+          EMAIL FORM
+          ONLY SHOWN FOR UNKNOWN QUESTION
+      =================================================== */}
 
-      <div className="border-t border-white/10 p-4">
-        <form
-          onSubmit={handleSubmit}
+      {emailRequired && (
+        <div
           className="
-            flex
-            items-center
-            gap-2
-            rounded-2xl
-            border
+            shrink-0
+            border-t
             border-white/10
-            bg-white/[0.04]
-            p-2
-            transition
-            focus-within:border-blue-400/30
-            focus-within:bg-blue-500/[0.03]
+            bg-[#080808]
+            p-4
           "
         >
-          <input
-            type="text"
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            placeholder="Ask me anything..."
-            autoComplete="off"
-            className="
-              min-w-0
-              flex-1
-              bg-transparent
-              px-3
-              py-2
-              text-sm
-              text-white
-              outline-none
-              placeholder:text-gray-600
-            "
-          />
+          <form onSubmit={handleEmailSubmit} className="space-y-3">
+            <div>
+              <p className="text-sm font-medium text-white">
+                Want Prattyancha to review this question?
+              </p>
 
-          <button
-            type="submit"
-            aria-label="Send message"
-            disabled={!input.trim()}
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                Please enter your email address so she can get back to you if
+                needed.
+              </p>
+            </div>
+
+            <input
+              type="email"
+              inputMode="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setEmailError("");
+              }}
+              placeholder="Enter your email address"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoFocus
+              disabled={sendingQuestion}
+              className="
+                w-full
+                rounded-2xl
+                border
+                border-white/10
+                bg-white/[0.04]
+                px-4
+                py-3
+                text-base
+                text-white
+                outline-none
+                transition
+                placeholder:text-gray-600
+                focus:border-blue-400/40
+                focus:bg-blue-500/[0.03]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+                sm:text-sm
+              "
+            />
+
+            {emailError && (
+              <p className="text-xs leading-5 text-red-400" role="alert">
+                {emailError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={!email.trim() || sendingQuestion}
+              className="
+                flex
+                min-h-11
+                w-full
+                touch-manipulation
+                items-center
+                justify-center
+                gap-2
+                rounded-2xl
+                bg-blue-500
+                px-5
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                transition
+                duration-200
+                hover:bg-blue-400
+                hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]
+                active:scale-[0.99]
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
+            >
+              {sendingQuestion ? "Sending..." : "Send to Prattyancha"}
+
+              {!sendingQuestion && <SendIcon fontSize="small" />}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* ===================================================
+          NORMAL INPUT
+      =================================================== */}
+
+      {!emailRequired && (
+        <div
+          className="
+            shrink-0
+            border-t
+            border-white/10
+            p-4
+          "
+        >
+          <form
+            onSubmit={handleSubmit}
             className="
               flex
-              h-10
-              w-10
-              shrink-0
               items-center
-              justify-center
-              rounded-xl
-              bg-blue-500
-              text-white
+              gap-2
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.04]
+              p-2
               transition
-              duration-200
-              hover:bg-blue-400
-              hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]
-              disabled:cursor-not-allowed
-              disabled:opacity-30
+              focus-within:border-blue-400/30
+              focus-within:bg-blue-500/[0.03]
             "
           >
-            <SendIcon fontSize="small" />
-          </button>
-        </form>
+            <input
+              type="text"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Ask me anything..."
+              autoComplete="off"
+              autoCapitalize="sentences"
+              className="
+                min-w-0
+                flex-1
+                bg-transparent
+                px-3
+                py-2
+                text-base
+                text-white
+                outline-none
+                placeholder:text-gray-600
+                sm:text-sm
+              "
+            />
 
-        <p
-          className="
-            mt-2
-            text-center
-            text-[10px]
-            text-gray-700
-          "
-        >
-          Ask about Prattyancha&apos;s portfolio
-        </p>
-      </div>
+            <button
+              type="submit"
+              aria-label="Send message"
+              disabled={!input.trim()}
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                touch-manipulation
+                items-center
+                justify-center
+                rounded-xl
+                bg-blue-500
+                text-white
+                transition
+                duration-200
+                hover:bg-blue-400
+                hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]
+                active:scale-95
+                disabled:cursor-not-allowed
+                disabled:opacity-30
+              "
+            >
+              <SendIcon fontSize="small" />
+            </button>
+          </form>
+
+          <p
+            className="
+              mt-2
+              text-center
+              text-[10px]
+              text-gray-700
+            "
+          >
+            Ask about Prattyancha&apos;s portfolio
+          </p>
+        </div>
+      )}
     </div>
   );
 }

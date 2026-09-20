@@ -23,13 +23,12 @@ export function Button({
   onClick,
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition-all duration-300";
+    "inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition-all duration-300 cursor-pointer";
 
   const variants = {
     primary:
-      "bg-blue-600 text-black bg-white border-white hover:border-blue-500/70",
-    secondary:
-      "border border-blue-500/70 text-white animate-[bounce_2.5s_ease-in-out_infinite] hover:text-blue-300",
+      "bg-blue-600 text-black bg-white border-white hover:border-blue-500/70 cursor-pointer",
+    secondary: "border border-white-500/70 text-white hover:text-blue-300 cursor-pointer",
   };
 
   const styles = `${baseStyles} ${variants[variant]} ${className}`;

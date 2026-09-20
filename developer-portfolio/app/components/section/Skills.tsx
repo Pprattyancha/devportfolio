@@ -8,7 +8,7 @@ export function Skills() {
       className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
       {/* ================= BACKGROUND IMAGE ================= */}
-      <div className="absolute inset-0 z-0">
+      {/* <div className="absolute inset-0 z-0">
         <BackgroundImage
           src="/imglogo.png"
           alt=""
@@ -17,7 +17,7 @@ export function Skills() {
           fit="contain"
           className="opacity-70"
         />
-      </div>
+      </div> */}
 
       {/* ================= DARK OVERLAY ================= */}
       <div
@@ -65,7 +65,7 @@ export function Skills() {
           Skills
         </p>
 
-        <h2 className="mt-4 text-4xl font-bold text-white md:text-6xl">
+        <h2 className="mt-4 text-xl font-bold text-white md:text-3xl">
           Technologies I work with
         </h2>
 

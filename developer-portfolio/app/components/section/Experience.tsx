@@ -10,7 +10,7 @@ export function Experience() {
       className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
       {/* ================= BACKGROUND IMAGE ================= */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* <div className="pointer-events-none absolute inset-0 z-0">
         <BackgroundImage
           src="/imglogo.png"
           alt=""
@@ -19,7 +19,7 @@ export function Experience() {
           fit="cover"
           className="opacity-50"
         />
-      </div>
+      </div> */}
 
       {/* ================= DARK OVERLAY ================= */}
       <div
@@ -86,7 +86,7 @@ export function Experience() {
             Experience
           </p>
 
-          <h2 className="mt-4 text-4xl font-bold tracking-tight text-white md:text-6xl">
+          <h2 className="mt-4 text-xl font-bold tracking-tight text-white md:text-3xl">
             Where I've worked
           </h2>
 

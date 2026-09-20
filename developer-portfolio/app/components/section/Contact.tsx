@@ -17,7 +17,7 @@ export function Contact() {
       className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
       {/* ================= BACKGROUND IMAGE ================= */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* <div className="pointer-events-none absolute inset-0 z-0">
         <BackgroundImage
           src="/imglogo.png"
           alt=""
@@ -26,7 +26,7 @@ export function Contact() {
           fit="cover"
           className="opacity-55"
         />
-      </div>
+      </div> */}
 
       {/* ================= DARK OVERLAY ================= */}
       <div
@@ -93,7 +93,7 @@ export function Contact() {
             Contact
           </p>
 
-          <h2 className="mt-4 text-4xl font-bold tracking-tight text-white md:text-6xl">
+          <h2 className="mt-4 text-xl font-bold tracking-tight text-white md:text-3xl">
             Let's build something great.
           </h2>
 
@@ -177,7 +177,7 @@ export function Contact() {
             </div>
 
             {/* Social Links */}
-            <div
+            {/* <div
               className="
                 mt-10
                 flex
@@ -187,8 +187,8 @@ export function Contact() {
                 pt-6
               "
             >
-              <SocialLinks showContact={false}/>
-            </div>
+              <SocialLinks showContact={false} />
+            </div> */}
           </div>
 
           {/* ================= CTA CARD ================= */}
@@ -215,7 +215,7 @@ export function Contact() {
               </p>
 
               <h3 className="mt-4 text-3xl font-semibold text-white">
-                Freelance & Full-Time Opportunities
+                Full-Time Opportunities
               </h3>
 
               <p className="mt-5 leading-7 text-gray-400">
@@ -226,7 +226,7 @@ export function Contact() {
             </div>
 
             {/* Start Conversation */}
-            <div className="mt-10">
+            <div className="mt-5">
               <button
                 type="button"
                 onClick={() => setChatOpen(true)}
@@ -245,9 +245,6 @@ export function Contact() {
     text-black
     transition-all
     duration-300
-
-    animate-[bounce_2.5s_ease-in-out_infinite]
-
     hover:scale-[1.04]
     hover:bg-gray-200
     hover:animate-none

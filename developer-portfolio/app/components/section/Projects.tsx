@@ -9,7 +9,7 @@ export function Projects() {
       className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
     >
       {/* ================= BACKGROUND IMAGE ================= */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* <div className="pointer-events-none absolute inset-0 z-0">
         <BackgroundImage
           src="/imglogo.png"
           alt=""
@@ -18,7 +18,7 @@ export function Projects() {
           fit="cover"
           className="opacity-60"
         />
-      </div>
+      </div> */}
 
       {/* ================= DARK OVERLAY ================= */}
       <div
@@ -83,7 +83,7 @@ export function Projects() {
           Projects
         </p>
 
-        <h2 className="mt-4 text-4xl font-bold text-white md:text-6xl">
+        <h2 className="mt-4 text-xl font-bold text-white md:text-3xl">
           Selected work
         </h2>
 

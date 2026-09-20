@@ -5,7 +5,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-black px-6 py-6 md:px-12 md:py-20"
+      className="relative overflow-hidden bg-black px-6 py-0 md:px-12 md:py-20"
     >
       {/* Background Glow */}
       <div
@@ -19,17 +19,35 @@ export function About() {
           {/* Glow */}
           <div
             aria-hidden="true"
-            className="absolute inset-10 rounded-full bg-blue-500/10 blur-[100px]"
+            className="
+      absolute
+      inset-0
+      rounded-full
+      bg-blue-500/10
+      blur-[100px]
+      scale-75
+    "
           />
 
           {/* Image Container */}
-          <div className="relative aspect-video w-full h-full overflow-hidden">
+          <div
+            className="
+      relative
+      mx-auto
+      h-[300px]
+      w-full
+      overflow-hidden
+      sm:h-[500px]
+      md:h-[600px]
+      lg:h-[650px]
+    "
+          >
             <BackgroundImage
-              src="/imageMERN.png"
+              src="/DxJPI.gif"
               priority
               objectPosition="center"
               fit="contain"
-              className="h-full w-full "
+              className="h-full w-full scale-110"
             />
           </div>
         </div>
@@ -40,36 +58,38 @@ export function About() {
             About Me
           </p>
 
-          <h2 className="max-w-2xl text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+          <h2 className="max-w-2xl text-xl font-bold leading-tight text-white md:text-xl lg:text-2xl">
             Building digital experiences that actually work.
           </h2>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-gray-400">
-            I’m Prattyancha Patharkar, a Frontend Lead with 5+ years of
-            experience in MERN/MEAN stack development, specializing in React,
-            Angular, TypeScript, JavaScript, and Node.js. I have worked on
-            scalable web applications, financial systems, real-time dashboards,
-            and data-driven platforms, with strong experience in frontend
-            architecture, performance optimization, API integration, and team
-            leadership. I enjoy turning complex problems into simple, intuitive,
-            and reliable digital experiences using modern technologies.
-            Academically, I completed my schooling in Maharashtra, followed by a
-            <span className="mx-1 font-serif font-bold italic text-white">
-              B.Sc. in Physics, Statistics, and Mathematics
-            </span>
-            from
-            <span className="mx-1 font-mono font-bold text-blue-400">
-              Dharampeth M P Deo Memorial Science College, Nagpur
-            </span>
-            in 2018, and an
-            <span className="mx-1 font-serif font-bold italic text-white">
-              M.Sc. in Computer Applications
-            </span>
-            from
-            <span className="mx-1 font-mono font-bold text-blue-400">
-              Fergusson College, Pune
-            </span>
-            in 2021.
-          </p>
+          <div className="mt-5 max-w-xl text-lg leading-8 text-gray-400">
+            <p>
+              I’m Prattyancha Patharkar, a Frontend Lead with 5+ years of
+              experience in MERN/MEAN stack development, specializing in React,
+              Angular, TypeScript, JavaScript, and Node.js. I have worked on
+              scalable web applications, financial systems, real-time
+              dashboards, and data-driven platforms, with strong experience in
+              frontend architecture, performance optimization, API integration,
+              and team leadership. I enjoy turning complex problems into simple,
+              intuitive, and reliable digital experiences using modern
+              technologies.
+            </p>
+
+            <p className="mt-5">
+              Academically, I completed my schooling in Maharashtra, followed
+              by:
+            </p>
+
+            <ul className="list-disc pl-6">
+              <li>
+                B.Sc. in Physics, Statistics, and Mathematics from Dharampeth M
+                P Deo Memorial Science College, Nagpur in 2018
+              </li>
+              <li>
+                M.Sc. in Computer Applications from Fergusson College, Pune in
+                2021
+              </li>
+            </ul>
+          </div>
           {/* Stats */}
           <div className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
             <div>

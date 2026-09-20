@@ -9,6 +9,14 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
+  const resumePath = "/Prattyancha_Patharkar_ResumeI_MERN_MEAN_Outsystems.pdf";
+  const handleResumeClick = () => {
+    window.open(
+      "/Prattyancha_Patharkar_ResumeI_MERN_MEAN_Outsystems.pdf",
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
   const closeMenu = () => {
     setIsOpen(false);
   };
@@ -180,10 +188,9 @@ export function Navbar() {
                     font-medium
                     transition-all
                     duration-300
-                    ${
-                      isActive
-                        ? "text-white"
-                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                    ${isActive
+                      ? "text-white"
+                      : "text-gray-400 hover:bg-white/5 hover:text-white"
                     }
                   `}
                 >
@@ -209,10 +216,11 @@ export function Navbar() {
               );
             })}
 
-            <ResumePreview
-              trigger={
-                <span
-                  className="
+
+            <span
+              onClick={handleResumeClick}
+              className="
+              cursor-pointer
         ml-3
         rounded-full
         border
@@ -230,11 +238,10 @@ export function Navbar() {
         hover:bg-blue-500/10
         hover:text-blue-300
       "
-                >
-                  Resume
-                </span>
-              }
-            />
+            >
+              Resume
+            </span>
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -342,10 +349,9 @@ export function Navbar() {
                       font-medium
                       transition-all
                       duration-300
-                      ${
-                        isActive
-                          ? "bg-blue-500/10 text-white"
-                          : "text-gray-300 hover:bg-white/5 hover:text-white"
+                      ${isActive
+                        ? "bg-blue-500/10 text-white"
+                        : "text-gray-300 hover:bg-white/5 hover:text-white"
                       }
                     `}
                   >
@@ -369,10 +375,12 @@ export function Navbar() {
               })}
 
               {/* Mobile Resume */}
-              <ResumePreview
-                trigger={
-                  <span
-                    className="
+
+              <span
+                onClick={handleResumeClick}
+                className="
+                              cursor-pointer
+
         ml-3
         rounded-full
         border
@@ -390,11 +398,10 @@ export function Navbar() {
         hover:bg-blue-500/10
         hover:text-blue-300
       "
-                  >
-                    Resume
-                  </span>
-                }
-              />
+              >
+                Resume
+              </span>
+
             </div>
           </div>
         </div>

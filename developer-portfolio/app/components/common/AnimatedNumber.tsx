@@ -25,7 +25,6 @@ export function AnimatedNumber({
       }
 
       const elapsed = timestamp - startTime;
-
       const progress = Math.min(elapsed / duration, 1);
 
       // Smooth ease-out
@@ -37,12 +36,12 @@ export function AnimatedNumber({
 
       setCount(currentValue);
 
-      if (progress >= 1) {
-        // Restart animation
-        startTime = timestamp;
+      // Stop after reaching the final value
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCount(end);
       }
-
-      animationFrame = requestAnimationFrame(animate);
     };
 
     animationFrame = requestAnimationFrame(animate);
