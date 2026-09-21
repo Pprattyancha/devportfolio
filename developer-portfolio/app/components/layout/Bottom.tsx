@@ -18,7 +18,7 @@ export function Bottom() {
          {/* <SocialLinks showContact={false}/> */}
           {/* Back To Top */}
           <Link
-            href="#home"
+            href="#about"
             className="transition hover:text-white"
           >
             Back to top ↑

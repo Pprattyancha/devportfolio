@@ -94,7 +94,7 @@ export function About() {
           <div className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
             <div>
               <p className="text-3xl font-bold text-white">
-                <AnimatedNumber end={6} suffix="+" />
+                <AnimatedNumber end={5} suffix="+" />
               </p>
 
               <p className="mt-1 text-sm text-gray-500">Years Experience</p>
@@ -102,7 +102,7 @@ export function About() {
 
             <div>
               <p className="text-3xl font-bold text-white">
-                <AnimatedNumber end={15} suffix="+" />
+                <AnimatedNumber end={10} suffix="+" />
               </p>
 
               <p className="mt-1 text-sm text-gray-500">Projects</p>

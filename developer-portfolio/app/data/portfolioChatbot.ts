@@ -518,24 +518,24 @@ export const portfolioAnswers: string[] = [
   "Prattyancha has worked at Greenpay Network Pvt. Ltd., Thinkonic Software Pvt. Ltd. and Konverge AI.",
 
   // CURRENT ROLE
-  "Prattyancha currently works as a Frontend Lead at Greenpay Network Pvt. Ltd.",
+  "Prattyancha worked as a Frontend Lead at Greenpay Network Pvt. Ltd.",
 
-  "Prattyancha currently works as a Frontend Lead at Greenpay Network Pvt. Ltd.",
+  "Prattyancha worked as a Frontend Lead at Greenpay Network Pvt. Ltd.",
 
   "Currently, she focuses on frontend architecture, scalable applications, real-time financial dashboards, responsive interfaces, performance optimization and developer mentoring.",
 
-  "Her current role is Frontend Lead at Greenpay Network Pvt. Ltd.",
+  "Prattyancha worked as a Frontend Lead at Greenpay Network Pvt. Ltd.",
 
-  "Yes. Prattyancha is currently working as a Frontend Lead at Greenpay Network.",
+  "Prattyancha worked as a Frontend Lead at Greenpay Network Pvt. Ltd.",
 
   // GREENPAY
-  "At Greenpay Network, Prattyancha works as a Frontend Lead on scalable financial applications, real-time dashboards, responsive interfaces and frontend architecture.",
+  "At Greenpay Network, Prattyancha worked as a Frontend Lead on scalable financial applications, real-time dashboards, responsive interfaces, and frontend architecture.",
 
-  "At Greenpay, she works on frontend architecture, scalable financial applications, real-time dashboards, REST API integration, responsive UI, performance optimization and Figma-to-React implementation.",
+  "At Greenpay, she worked on frontend architecture, scalable financial applications, real-time dashboards, REST API integration, responsive UI, performance optimization, and Figma-to-React implementation.",
 
-  "Her role at Greenpay is Frontend Lead.",
+  "Her role at Greenpay was Frontend Lead.",
 
-  "Her Greenpay work includes financial applications and dashboards, responsive interfaces, REST API integrations, frontend architecture and performance optimization. Some systems handle 10K+ transactions per day.",
+  "Her Greenpay work included financial applications and dashboards, responsive interfaces, REST API integrations, frontend architecture, and performance optimization. Some systems handled 10K+ transactions per day.",
 
   // THINKONIC
   "At Thinkonic Software, Prattyancha worked as a Software Developer developing data-driven dashboards and scalable software solutions.",
